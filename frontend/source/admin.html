@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - CSV Analysis</title>
+    <style>
+        :root {
+            --bg-deep: #121214;
+            --bg-surface: #1e1e20;
+            --bg-card: #252528;
+            --text-main: #dcdcb1; /* Beige main text */
+            --text-dim: #a0a095; /* Muted beige secondary text */
+            --border-ui: #323235;
+            --accent-ui: #404045;
+            --radius: 6px;
+        }
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 3rem;
+            -webkit-font-smoothing: antialiased;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: var(--bg-surface);
+            padding: 3rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-ui);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+        h2 { 
+            font-size: 1.4rem; 
+            font-weight: 500; 
+            margin-bottom: 2.5rem; 
+            text-align: center;
+            letter-spacing: 0.05em;
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 1rem; 
+            font-size: 0.85rem;
+        }
+        th, td { 
+            border-bottom: 1px solid var(--border-ui); 
+            padding: 1rem; 
+            text-align: left; 
+        }
+        th { 
+            background-color: rgba(255, 255, 255, 0.02); 
+            color: var(--text-dim); 
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 0.05em;
+        }
+        .btn {
+            padding: 0.4rem 0.8rem;
+            border: 1px solid var(--border-ui);
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+            background: var(--bg-card);
+            color: var(--text-main);
+            transition: all 0.2s;
+        }
+        .btn-edit:hover { border-color: var(--text-dim); background: #2d2d30; }
+        .btn-delete { color: #888; }
+        .btn-delete:hover { color: #ff4444; border-color: rgba(255, 68, 68, 0.3); }
+        .btn-logout { background-color: var(--accent-ui); border: none; float: right; }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+            backdrop-filter: blur(4px);
+        }
+        .modal-content {
+            background-color: var(--bg-surface);
+            margin: 10% auto;
+            padding: 2.5rem;
+            width: 360px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-ui);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+        .form-group { margin-bottom: 1.25rem; }
+        label { display: block; margin-bottom: 0.5rem; font-size: 0.75rem; font-weight: 600; color: var(--text-dim); }
+        input[type="text"], input[type="email"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-ui);
+            border-radius: var(--radius);
+            box-sizing: border-box;
+            background: var(--bg-input);
+            color: var(--text-main);
+        }
+        .btn-save { background-color: var(--accent-ui); color: #fff; width: 100%; margin-top: 1rem; padding: 0.85rem; border: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="btn btn-logout" onclick="logout()">Logout</button>
+        <h2>ADMIN MANAGEMENT</h2>
+        
+        <table id="user-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Analysis</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="user-body"></tbody>
+        </table>
+    </div>
+
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <h3 style="font-weight:500; margin-bottom:1.5rem;">Edit User</h3>
+            <input type="hidden" id="edit-id">
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="edit-username">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="edit-email">
+            </div>
+            <div class="form-group">
+                <label>New Password</label>
+                <input type="text" id="edit-password" placeholder="No change if blank">
+            </div>
+            <div class="form-group" style="display:flex; gap:1.5rem; align-items:center;">
+                <label style="margin:0; display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                    <input type="checkbox" id="edit-is-pro"> PRO
+                </label>
+                <label style="margin:0; display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                    <input type="checkbox" id="edit-is-admin"> ADMIN
+                </label>
+            </div>
+            <button class="btn btn-save" onclick="saveUser()">Save Changes</button>
+            <button class="btn" onclick="closeModal()" style="width:100%; margin-top:0.5rem; background:none; border:none; color:var(--text-dim);">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem('user'));
+
+        if (!user || !user.is_admin) {
+            window.location.href = 'login.html';
+        }
+
+        async function fetchUsers() {
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/admin/users/');
+                const data = await response.json();
+
+                if (response.ok) {
+                    const tbody = document.getElementById('user-body');
+                    tbody.innerHTML = '';
+                    data.forEach(u => {
+                        const role = u.is_admin ? 'Admin' : 'User';
+                        const pro = u.is_pro ? '<span style="color:#ffffff;font-weight:600;background:rgba(255,255,255,0.1);padding:2px 5px;border-radius:3px;">PRO</span>' : 'Free';
+                        const userJson = JSON.stringify(u).replace(/'/g, "&#39;");
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>${u.id}</td>
+                                <td>${u.username}</td>
+                                <td>${u.email}</td>
+                                <td>${role}</td>
+                                <td>${pro}</td>
+                                <td>${u.analysis_count}</td>
+                                <td>
+                                    <button class="btn btn-edit" onclick='openEditModal(${userJson})'>Edit</button>
+                                    <button class="btn btn-delete" onclick="deleteUser(${u.id})">Delete</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }
+            } catch (error) { alert('Error fetching users'); }
+        }
+
+        function openEditModal(u) {
+            document.getElementById('edit-id').value = u.id;
+            document.getElementById('edit-username').value = u.username;
+            document.getElementById('edit-email').value = u.email;
+            document.getElementById('edit-password').value = '';
+            document.getElementById('edit-is-pro').checked = u.is_pro;
+            document.getElementById('edit-is-admin').checked = u.is_admin;
+            document.getElementById('editModal').style.display = 'block';
+        }
+
+        function closeModal() { document.getElementById('editModal').style.display = 'none'; }
+
+        async function saveUser() {
+            const id = document.getElementById('edit-id').value;
+            const payload = {
+                username: document.getElementById('edit-username').value,
+                email: document.getElementById('edit-email').value,
+                password: document.getElementById('edit-password').value,
+                is_pro: document.getElementById('edit-is-pro').checked,
+                is_admin: document.getElementById('edit-is-admin').checked
+            };
+
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/api/admin/users/${id}/`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    alert('User updated');
+                    closeModal();
+                    fetchUsers();
+                }
+            } catch (error) { alert('Update failed'); }
+        }
+
+        async function deleteUser(id) {
+            if (!confirm('Are you sure?')) return;
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/api/admin/users/${id}/delete/`, { method: 'DELETE' });
+                if (response.ok) { alert('User deleted'); fetchUsers(); }
+            } catch (error) { alert('Delete failed'); }
+        }
+
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        }
+
+        fetchUsers();
+    </script>
+</body>
+</html>
