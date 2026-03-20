@@ -1,0 +1,7 @@
+Analysis for file: Machine1 diff_YpVxLx8.csv
+------------------------------
+'Machine 1':
+  • The mean of 'Machine 1' is 152.28.
+  • The standard deviation is 8.36.
+  • The minimum value is 145.55 and the maximum value is 190.0.
+  • Found 8 outliers: 160.0, 170.0, 178.0, 189.0, 190.0

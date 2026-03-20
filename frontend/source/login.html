@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - CSV Analysis</title>
+    <style>
+        :root {
+            --bg-deep: #121214;
+            --bg-surface: #1e1e20;
+            --bg-input: #2a2a2d;
+            --text-main: #dcdcb1; /* Beige main text */
+            --text-dim: #a0a095; /* Muted beige for secondary text */
+            --border-ui: #323235;
+            --accent-ui: #404045;
+            --radius: 6px;
+        }
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+        .container {
+            max-width: 360px;
+            width: 90%;
+            background-color: var(--bg-surface);
+            padding: 2.5rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-ui);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        h2 { 
+            font-size: 1.4rem; 
+            font-weight: 500; 
+            margin-bottom: 2rem; 
+            text-align: center;
+            letter-spacing: -0.01em;
+        }
+        .form-group { margin-bottom: 1.25rem; }
+        label { 
+            display: block; 
+            margin-bottom: 0.5rem; 
+            font-size: 0.8rem; 
+            color: var(--text-dim);
+            font-weight: 500;
+        }
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-ui);
+            border-radius: var(--radius);
+            box-sizing: border-box;
+            font-size: 0.95rem;
+            background: var(--bg-input);
+            color: var(--text-main);
+            transition: all 0.2s;
+        }
+        input:focus {
+            outline: none;
+            border-color: var(--text-dim);
+            background: #2d2d30;
+        }
+        button {
+            width: 100%;
+            padding: 0.85rem;
+            background-color: var(--accent-ui);
+            color: var(--text-main);
+            border: 1px solid var(--border-ui);
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.95rem;
+            margin-top: 1rem;
+            transition: background 0.2s;
+        }
+        button:hover { background-color: #4a4a50; }
+        .toggle-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            cursor: pointer;
+            display: block;
+        }
+        .toggle-link:hover { color: var(--text-main); }
+        #admin-toggle { margin-top: 0.5rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 id="form-title">Login</h2>
+        <div class="form-group">
+            <label id="username-label">Username</label>
+            <input type="text" id="username">
+        </div>
+        <div class="form-group" id="email-group" style="display: none;">
+            <label>Email</label>
+            <input type="email" id="email">
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="password">
+        </div>
+        <button id="submit-btn">Login</button>
+        <div class="toggle-link" id="toggle-link">Create an account</div>
+        <div class="toggle-link" id="admin-toggle">Admin Login</div>
+    </div>
+
+    <script>
+        const formTitle = document.getElementById('form-title');
+        const emailGroup = document.getElementById('email-group');
+        const submitBtn = document.getElementById('submit-btn');
+        const toggleLink = document.getElementById('toggle-link');
+        const adminToggle = document.getElementById('admin-toggle');
+        const usernameLabel = document.getElementById('username-label');
+        
+        let isSignup = false;
+        let isAdmin = false;
+
+        if (window.location.port === '5000') {
+            adminToggle.style.display = 'none';
+            usernameLabel.textContent = 'Username or Email';
+        }
+
+        const currentUser = JSON.parse(localStorage.getItem('user'));
+        if (currentUser) {
+            if (currentUser.is_admin) {
+                window.location.href = 'admin.html';
+            } else {
+                window.location.href = 'index.html';
+            }
+        }
+
+        toggleLink.addEventListener('click', () => {
+            isSignup = !isSignup;
+            isAdmin = false;
+            formTitle.textContent = isSignup ? 'Sign Up' : 'Login';
+            emailGroup.style.display = isSignup ? 'block' : 'none';
+            submitBtn.textContent = isSignup ? 'Create Account' : 'Login';
+            toggleLink.textContent = isSignup ? 'Already have an account? Login' : "Create an account";
+            
+            if (window.location.port === '5000') {
+                adminToggle.style.display = 'none';
+                usernameLabel.textContent = isSignup ? 'Username' : 'Username or Email';
+            } else {
+                adminToggle.style.display = isSignup ? 'none' : 'block';
+                usernameLabel.textContent = 'Username';
+            }
+        });
+
+        adminToggle.addEventListener('click', () => {
+            isAdmin = !isAdmin;
+            isSignup = false;
+            formTitle.textContent = isAdmin ? 'Admin Portal' : 'Login';
+            emailGroup.style.display = 'none';
+            submitBtn.textContent = isAdmin ? 'Admin Access' : 'Login';
+            toggleLink.style.display = isAdmin ? 'none' : 'block';
+            adminToggle.textContent = isAdmin ? 'User Portal' : 'Admin Login';
+            usernameLabel.textContent = 'Username';
+        });
+
+        submitBtn.addEventListener('click', async () => {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const email = document.getElementById('email').value;
+
+            let url = 'http://127.0.0.1:8000/api/login/';
+            let body = { username, password };
+
+            if (isSignup) {
+                url = 'http://127.0.0.1:8000/api/signup/';
+                body.email = email;
+            } else if (isAdmin) {
+                url = 'http://127.0.0.1:8000/api/admin-login/';
+            }
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    if (isSignup) {
+                        alert('Signup successful! Please login.');
+                        toggleLink.click();
+                    } else {
+                        localStorage.setItem('user', JSON.stringify(data));
+                        if (isAdmin) {
+                            window.location.href = 'admin.html';
+                        } else {
+                            window.location.href = 'index.html';
+                        }
+                    }
+                } else {
+                    alert(data.error || 'Invalid credentials');
+                }
+            } catch (error) {
+                alert('Backend connection error');
+            }
+        });
+    </script>
+</body>
+</html>

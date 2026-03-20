@@ -1,0 +1,16 @@
+Analysis for file: Advertising.csv
+------------------------------
+'Month':
+The column 'Month' is non-numeric and has 200 unique values.
+
+'TV':
+The mean of 'TV' is 147.04. The standard deviation is 85.85. The minimum value is 0.7 and the maximum value is 296.4.
+
+'radio':
+The mean of 'radio' is 23.26. The standard deviation is 14.85. The minimum value is 0.0 and the maximum value is 49.6.
+
+'newspaper':
+The mean of 'newspaper' is 30.55. The standard deviation is 21.78. The minimum value is 0.3 and the maximum value is 114.0.
+
+'sales':
+The mean of 'sales' is 14.02. The standard deviation is 5.22. The minimum value is 1.6 and the maximum value is 27.0.

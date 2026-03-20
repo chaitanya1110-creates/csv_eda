@@ -1,0 +1,11 @@
+Analysis for file: Machine1.csv
+------------------------------
+'Machine 1':
+  • The mean of 'Machine 1' is 150.20.
+  • The standard deviation is 2.02.
+  • The minimum value is 145.55 and the maximum value is 154.55.
+  • No outliers detected in 'Machine 1'.
+
+Statistical Tests:
+------------------------------
+  • Statistical test for 'Machine 1': The mean is significantly different from 0 (P-value: 0.0000).

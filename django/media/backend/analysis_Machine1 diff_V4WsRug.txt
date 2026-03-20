@@ -1,0 +1,7 @@
+Analysis for file: Machine1 diff_V4WsRug.csv
+------------------------------
+'Machine 1':
+  • The mean of 'Machine 1' is 152.90.
+  • The standard deviation is 16.13.
+  • The minimum value is 108.0 and the maximum value is 289.0.
+  • Found 11 outliers: 108.0, 129.0, 160.0, 170.0, 178.0...

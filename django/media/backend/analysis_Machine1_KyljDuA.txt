@@ -1,0 +1,7 @@
+Analysis for file: Machine1_KyljDuA.csv
+------------------------------
+'Machine 1':
+  • The mean of 'Machine 1' is 150.20.
+  • The standard deviation is 2.02.
+  • The minimum value is 145.55 and the maximum value is 154.55.
+  • No outliers detected in 'Machine 1'.

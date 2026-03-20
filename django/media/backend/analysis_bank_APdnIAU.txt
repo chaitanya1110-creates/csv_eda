@@ -1,0 +1,90 @@
+Analysis for file: bank_APdnIAU.csv
+------------------------------
+'age':
+  • The mean of 'age' is 41.17.
+  • The standard deviation is 10.58.
+  • The minimum value is 19 and the maximum value is 87.
+  • Found 38 outliers: 74, 75, 76, 77, 78...
+
+'job':
+  • The column 'job' is non-numeric and has 12 unique values.
+
+'marital':
+  • The column 'marital' is non-numeric and has 3 unique values.
+
+'education':
+  • The column 'education' is non-numeric and has 4 unique values.
+
+'default':
+  • The column 'default' is non-numeric and has 2 unique values.
+
+'balance':
+  • The mean of 'balance' is 1422.66.
+  • The standard deviation is 3009.64.
+  • The minimum value is -3313 and the maximum value is 71188.
+  • Found 506 outliers: -3313, -2082, 3601, 3608, 3611...
+
+'housing':
+  • The column 'housing' is non-numeric and has 2 unique values.
+
+'loan':
+  • The column 'loan' is non-numeric and has 2 unique values.
+
+'contact':
+  • The column 'contact' is non-numeric and has 3 unique values.
+
+'day':
+  • The mean of 'day' is 15.92.
+  • The standard deviation is 8.25.
+  • The minimum value is 1 and the maximum value is 31.
+  • No outliers detected in 'day'.
+
+'month':
+  • The column 'month' is non-numeric and has 12 unique values.
+
+'duration':
+  • The mean of 'duration' is 263.96.
+  • The standard deviation is 259.86.
+  • The minimum value is 4 and the maximum value is 3025.
+  • Found 330 outliers: 667, 668, 669, 670, 671...
+
+'campaign':
+  • The mean of 'campaign' is 2.79.
+  • The standard deviation is 3.11.
+  • The minimum value is 1 and the maximum value is 50.
+  • Found 318 outliers: 7, 8, 9, 10, 11...
+
+'pdays':
+  • The mean of 'pdays' is 39.77.
+  • The standard deviation is 100.12.
+  • The minimum value is -1 and the maximum value is 871.
+  • Found 816 outliers: 1, 2, 3, 5, 7...
+
+'previous':
+  • The mean of 'previous' is 0.54.
+  • The standard deviation is 1.69.
+  • The minimum value is 0 and the maximum value is 25.
+  • Found 816 outliers: 1, 2, 3, 4, 5...
+
+'poutcome':
+  • The column 'poutcome' is non-numeric and has 4 unique values.
+
+'y':
+  • The column 'y' is non-numeric and has 2 unique values.
+
+Statistical Tests:
+------------------------------
+  • One-Way ANOVA for 7 numeric columns:
+    - F-statistic: 947.4770, P-value: 0.0000
+    - Result: Significant differences found. Performing Tukey's HSD test...
+    - Significant pair: age  balance  1381.4877    0.0  1310.6407  1452.3347   True
+    - Significant pair: age duration   222.7912    0.0   151.9442   293.6382   True
+    - Significant pair: balance campaign -1419.8642    0.0 -1490.7112 -1349.0172   True
+    - Significant pair: balance      day -1406.7425    0.0 -1477.5895 -1335.8955   True
+    - Significant pair: balance duration -1158.6965    0.0 -1229.5435 -1087.8495   True
+    - Significant pair: balance    pdays -1382.8912    0.0 -1453.7382 -1312.0442   True
+    - Significant pair: balance previous -1422.1152    0.0 -1492.9622 -1351.2682   True
+    - Significant pair: campaign duration   261.1677    0.0   190.3207   332.0147   True
+    - Significant pair: day duration    248.046    0.0    177.199    318.893   True
+    - Significant pair: duration    pdays  -224.1946    0.0  -295.0416  -153.3477   True
+    - Significant pair: duration previous  -263.4187    0.0  -334.2657  -192.5717   True

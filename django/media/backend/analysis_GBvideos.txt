@@ -1,0 +1,110 @@
+Analysis for file: GBvideos.csv
+------------------------------
+'video_id':
+  • The column 'video_id' is non-numeric and has 1713 unique values.
+
+'title':
+  • The column 'title' is non-numeric and has 1771 unique values.
+
+'channel_title':
+  • The column 'channel_title' is non-numeric and has 1003 unique values.
+
+'category_id':
+  • The mean of 'category_id' is 19.74.
+  • The standard deviation is 7.18.
+  • The minimum value is 1 and the maximum value is 29.
+  • Found 460 outliers: 1, 2
+
+'tags':
+  • The column 'tags' is non-numeric and has 1631 unique values.
+
+'views':
+  • The mean of 'views' is 1110466.76.
+  • The standard deviation is 3048404.95.
+  • The minimum value is 0 and the maximum value is 58961407.
+  • Found 845 outliers: 2274057, 2277270, 2278284, 2280908, 2283009...
+
+'likes':
+  • The mean of 'likes' is 38850.02.
+  • The standard deviation is 109283.10.
+  • The minimum value is 0 and the maximum value is 2289911.
+  • Found 901 outliers: 75123, 75129, 75145, 75199, 75228...
+
+'dislikes':
+  • The mean of 'dislikes' is 1528.48.
+  • The standard deviation is 8175.72.
+  • The minimum value is 0 and the maximum value is 192725.
+  • Found 973 outliers: 2058, 2060, 2062, 2063, 2064...
+
+'comment_total':
+  • The mean of 'comment_total' is 4990.40.
+  • The standard deviation is 26833.89.
+  • The minimum value is 0 and the maximum value is 813322.
+  • Found 947 outliers: 7854, 7858, 7870, 7882, 7885...
+
+'thumbnail_link':
+  • The column 'thumbnail_link' is non-numeric and has 1736 unique values.
+
+'date':
+  • The column 'date' is non-numeric and has 42 unique values.
+
+'Unnamed: 11':
+  • The column 'Unnamed: 11' is non-numeric and has 2 unique values.
+
+'Unnamed: 12':
+  • The column 'Unnamed: 12' is non-numeric and has 2 unique values.
+
+'Unnamed: 13':
+  • The mean of 'Unnamed: 13' is 22.50.
+  • The standard deviation is 0.71.
+  • The minimum value is 22.0 and the maximum value is 23.0.
+  • No outliers detected in 'Unnamed: 13'.
+
+'Unnamed: 14':
+  • The column 'Unnamed: 14' is non-numeric and has 2 unique values.
+
+'Unnamed: 15':
+  • The mean of 'Unnamed: 15' is 3835088.00.
+  • The standard deviation is 4117962.21.
+  • The minimum value is 923249.0 and the maximum value is 6746927.0.
+  • No outliers detected in 'Unnamed: 15'.
+
+'Unnamed: 16':
+  • The mean of 'Unnamed: 16' is 62266.00.
+  • The standard deviation is 66308.23.
+  • The minimum value is 15379.0 and the maximum value is 109153.0.
+  • No outliers detected in 'Unnamed: 16'.
+
+'Unnamed: 17':
+  • The mean of 'Unnamed: 17' is 2442.50.
+  • The standard deviation is 1973.54.
+  • The minimum value is 1047.0 and the maximum value is 3838.0.
+  • No outliers detected in 'Unnamed: 17'.
+
+'Unnamed: 18':
+  • The mean of 'Unnamed: 18' is 6078.00.
+  • The standard deviation is 2993.89.
+  • The minimum value is 3961.0 and the maximum value is 8195.0.
+  • No outliers detected in 'Unnamed: 18'.
+
+'Unnamed: 19':
+  • The column 'Unnamed: 19' is non-numeric and has 2 unique values.
+
+'Unnamed: 20':
+  • The mean of 'Unnamed: 20' is 26.09.
+  • The standard deviation is 1.41.
+  • The minimum value is 25.09 and the maximum value is 27.09.
+  • No outliers detected in 'Unnamed: 20'.
+
+Statistical Tests:
+------------------------------
+  • One-Way ANOVA: Significant differences found across columns (P-value: 0.0000).
+    Performing Tukey's HSD test to identify specific differences:
+    - Significant difference: Unnamed: 15   category_id -3835068.2615 0.0034 -6940634.1122 -729502.4108   True
+    - Significant difference: Unnamed: 15 comment_total -3830097.6049 0.0035 -6935663.4556 -724531.7542   True
+    - Significant difference: Unnamed: 15      dislikes -3833559.5183 0.0034  -6939125.369 -727993.6676   True
+    - Significant difference: Unnamed: 15         likes -3796237.9756  0.004 -6901803.8263 -690672.1249   True
+    - Significant difference: category_id         views  1110447.0173    0.0  1040991.4296 1179902.6049   True
+    - Significant difference: comment_total         views  1105476.3606    0.0  1036020.7729 1174931.9483   True
+    - Significant difference: dislikes         views   1108938.274    0.0  1039482.6864 1178393.8617   True
+    - Significant difference: likes         views  1071616.7313    0.0  1002161.1437  1141072.319   True

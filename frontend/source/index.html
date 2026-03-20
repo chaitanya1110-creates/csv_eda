@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV Analysis</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root {
+            --bg-deep: #121214;
+            --bg-surface: #1e1e20;
+            --bg-card: #252528;
+            --text-main: #dcdcb1; /* Beige main text */
+            --text-dim: #a0a095; /* Muted beige secondary text */
+            --border-ui: #323235;
+            --accent-ui: #404045;
+            --radius: 6px;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: var(--bg-surface);
+            padding: 3rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-ui);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 500;
+            text-align: center;
+            letter-spacing: 0.15em;
+            margin-bottom: 3rem;
+            color: var(--text-main);
+        }
+
+        .user-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            border: 1px solid var(--border-ui);
+        }
+
+        .upload-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 3rem;
+            border: 1px dashed var(--border-ui);
+            border-radius: var(--radius);
+            margin-bottom: 2rem;
+            background-color: rgba(255, 255, 255, 0.02);
+            transition: all 0.2s;
+        }
+
+        input[type="file"] { display: none; }
+
+        .custom-file-upload {
+            background-color: var(--bg-card);
+            color: var(--text-main);
+            border: 1px solid var(--border-ui);
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .custom-file-upload:hover {
+            border-color: var(--text-dim);
+            background-color: #2d2d30;
+        }
+
+        .btn-analyze {
+            background-color: var(--accent-ui);
+            color: var(--text-main);
+            border: 1px solid var(--border-ui);
+            padding: 1rem;
+            border-radius: var(--radius);
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s;
+        }
+
+        .btn-analyze:hover:not(:disabled) { background-color: #4a4a50; }
+        .btn-analyze:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        #analysis-box {
+            display: none;
+            margin-top: 3rem;
+            padding: 2rem;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-ui);
+            border-radius: var(--radius);
+            white-space: pre-wrap;
+            line-height: 1.6;
+            font-size: 0.9rem;
+            color: var(--text-main);
+        }
+
+        .analysis-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-main);
+            border-bottom: 1px solid var(--border-ui);
+            padding-bottom: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        .plot-container {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-ui);
+            border-radius: var(--radius);
+            text-align: center;
+        }
+
+        .plot-image {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .download-btn {
+            display: none;
+            margin-top: 2rem;
+            background-color: transparent;
+            color: var(--text-dim);
+            border: 1px solid var(--border-ui);
+            padding: 0.85rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 500;
+            width: 100%;
+            transition: all 0.2s;
+        }
+
+        .download-btn:hover { color: var(--text-main); border-color: var(--text-dim); }
+
+        .pro-badge {
+            background: #323235;
+            color: #ffffff;
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+            border: 1px solid #404045;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            cursor: pointer;
+            font-size: 0.8rem;
+            text-decoration: underline;
+        }
+        .logout-btn:hover { color: var(--text-main); }
+
+        .loader {
+            display: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #323235;
+            border-top: 2px solid #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 1rem auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="user-info">
+            <div>
+                <span id="display-username"></span>
+                <span id="pro-status"></span>
+            </div>
+            <div>
+                <button id="buy-pro-btn" class="custom-file-upload" style="display: none; padding: 0.3rem 0.7rem; font-size: 0.75rem; margin-right: 1rem;">Upgrade</button>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <h1>CSV ANALYZER</h1>
+        
+        <div class="upload-section">
+            <label class="custom-file-upload">
+                <input type="file" id="csv-file" accept=".csv">
+                Select Dataset
+            </label>
+            <div id="file-display" style="font-size: 0.8rem; color: var(--text-dim);">No file selected</div>
+            <button id="analyze-btn" class="btn-analyze" disabled>Process Data</button>
+        </div>
+
+        <div id="loader" class="loader"></div>
+
+        <div id="analysis-box">
+            <div class="analysis-title">DESCRIPTIVE RESULTS</div>
+            <div id="analysis-content"></div>
+        </div>
+
+        <button id="download-pdf" class="download-btn">Generate Report</button>
+    </div>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem('user'));
+        const displayUsername = document.getElementById('display-username');
+        const proStatus = document.getElementById('pro-status');
+        const buyProBtn = document.getElementById('buy-pro-btn');
+
+        if (!user) {
+            window.location.href = 'login.html';
+        } else {
+            if (user.is_admin && !window.location.href.includes('admin.html')) {
+                window.location.href = 'admin.html';
+            }
+            displayUsername.textContent = user.username;
+            if (user.is_pro) {
+                proStatus.innerHTML = '<span class="pro-badge">PRO</span>';
+                buyProBtn.style.display = 'none';
+            } else {
+                buyProBtn.style.display = 'inline-block';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        }
+
+        buyProBtn.addEventListener('click', () => {
+            window.location.href = 'purchase.html';
+        });
+
+        const fileInput = document.getElementById('csv-file');
+        const fileDisplay = document.getElementById('file-display');
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const analysisBox = document.getElementById('analysis-box');
+        const analysisContent = document.getElementById('analysis-content');
+        const downloadBtn = document.getElementById('download-pdf');
+        const loader = document.getElementById('loader');
+        let currentFileName = '';
+        let currentStructuredAnalysis = [];
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                fileDisplay.textContent = file.name;
+                analyzeBtn.disabled = false;
+            } else {
+                fileDisplay.textContent = 'No file selected';
+                analyzeBtn.disabled = true;
+            }
+        });
+
+        analyzeBtn.addEventListener('click', async () => {
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('user_id', user.user_id);
+
+            analyzeBtn.disabled = true;
+            loader.style.display = 'block';
+            analysisBox.style.display = 'none';
+            downloadBtn.style.display = 'none';
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/upload-csv/', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    if (response.status === 403) {
+                        alert(data.error);
+                        window.location.href = 'purchase.html';
+                    } else {
+                        throw new Error(data.error || 'Analysis failed');
+                    }
+                }
+
+                currentFileName = data.original_file.replace(/\.[^/.]+$/, "");
+                currentStructuredAnalysis = data.structured_analysis || [];
+                
+                analysisContent.innerHTML = '';
+                
+                currentStructuredAnalysis.forEach(item => {
+                    const colDiv = document.createElement('div');
+                    colDiv.style.marginBottom = '2.5rem';
+                    
+                    const textDiv = document.createElement('div');
+                    textDiv.textContent = item.text.join('\n');
+                    colDiv.appendChild(textDiv);
+                    
+                    if (item.plot) {
+                        const plotDiv = document.createElement('div');
+                        plotDiv.className = 'plot-container';
+                        plotDiv.innerHTML = `
+                            <div style="font-size:0.8rem; font-weight:600; color:#666; margin-bottom:1rem;">Distribution: ${item.column}</div>
+                            <img src="${item.plot}" class="plot-image" alt="Box plot for ${item.column}">
+                        `;
+                        colDiv.appendChild(plotDiv);
+                    }
+                    analysisContent.appendChild(colDiv);
+                });
+
+                analysisBox.style.display = 'block';
+                downloadBtn.style.display = 'block';
+                
+            } catch (error) {
+                alert('Error: ' + error.message);
+            } finally {
+                loader.style.display = 'none';
+                analyzeBtn.disabled = false;
+            }
+        });
+
+        async function getBase64ImageFromUrl(imageUrl) {
+            const res = await fetch(imageUrl);
+            const blob = await res.blob();
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.addEventListener("load", function () { resolve(reader.result); }, false);
+                reader.onerror = () => reject("Error reading image");
+                reader.readAsDataURL(blob);
+            });
+        }
+
+        downloadBtn.addEventListener('click', async () => {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            const margin = 20;
+            const pageHeight = doc.internal.pageSize.height;
+            let y = 20;
+
+            doc.setFontSize(18);
+            doc.text('CSV Analysis Report', margin, y);
+            
+            y += 10;
+            doc.setFontSize(10);
+            doc.setTextColor(100);
+            doc.text(`Generated on: ${new Date().toLocaleString()}`, margin, y);
+            
+            y += 5;
+            doc.setDrawColor(230);
+            doc.line(margin, y, 190, y);
+            
+            y += 10;
+            doc.setTextColor(0);
+            const splitText = doc.splitTextToSize(analysisContent.innerText, 170);
+            const lineHeight = 6;
+
+            for (let i = 0; i < splitText.length; i++) {
+                if (y + lineHeight > pageHeight - margin) {
+                    doc.addPage();
+                    y = margin;
+                }
+                doc.text(splitText[i], margin, y);
+                y += lineHeight;
+            }
+
+            for (const item of currentStructuredAnalysis) {
+                if (item.plot) {
+                    try {
+                        const imgData = await getBase64ImageFromUrl(item.plot);
+                        if (y + 80 > pageHeight - margin) {
+                            doc.addPage();
+                            y = margin;
+                        }
+                        y += 10;
+                        doc.setFontSize(12);
+                        doc.text(`Box Plot: ${item.column}`, margin, y);
+                        y += 5;
+                        doc.addImage(imgData, 'PNG', margin, y, 160, 80);
+                        y += 85;
+                    } catch (err) { console.error("Error adding column plot", err); }
+                }
+            }
+            
+            const fileName = currentFileName ? `${currentFileName}_analysis.pdf` : 'csv_analysis_report.pdf';
+            doc.save(fileName);
+        });
+    </script>
+</body>
+</html>
